@@ -496,6 +496,26 @@ kill(int pid)
   return -1;
 }
 
+int 
+info(int x){
+
+  if(x == 1){
+    int proc_Count = 0;
+    struct proc *p;
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+      if (p->state != UNUSED){
+        proc_Count++;
+      }
+    }
+    return proc_Count;
+  }
+
+
+  return x;
+
+}
+
+
 //PAGEBREAK: 36
 // Print a process listing to console.  For debugging.
 // Runs when user types ^P on console.

@@ -7,6 +7,16 @@
 #include "mmu.h"
 #include "proc.h"
 
+
+int 
+sys_info(void){
+  int x;
+  if(argint(0, &x) < 0)
+    return -1;
+  return info(x);
+
+}
+
 int
 sys_fork(void)
 {
