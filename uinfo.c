@@ -20,13 +20,9 @@ int main(int argc, char *argv[])
 
   if (x == 2){
         printf(1, "total system calls from this process: %d\n", info(x));
-        printf(1, "pid: %d\n", getpid());
         printf(1, "total system calls from this process: %d\n", info(x));
-	printf(1, "pid: %d\n", getpid());
 	printf(1, "total system calls from this process: %d\n", info(x));
-        printf(1, "pid: %d\n", getpid());
 	printf(1, "total system calls from this process: %d\n", info(x));
-	printf(1, "pid: %d\n", getpid());
 	printf(1, "total system calls from this process: %d\n", info(x));
   }
 

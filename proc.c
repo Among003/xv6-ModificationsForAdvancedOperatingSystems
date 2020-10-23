@@ -124,7 +124,6 @@ userinit(void)
   extern char _binary_initcode_start[], _binary_initcode_size[];
 
   p = allocproc();
-   p->sysCallTotal = 0; 
   initproc = p;
   if((p->pgdir = setupkvm()) == 0)
     panic("userinit: out of memory?");
@@ -230,6 +229,8 @@ exit(void)
   struct proc *curproc = myproc();
   struct proc *p;
   int fd;
+
+  curproc->sysCallTotal = 0;  
 
   if(curproc == initproc)
     panic("init exiting");
@@ -531,7 +532,7 @@ updateSysCallCount(void)
 int
 resetSysCallCount(void)
 {
-  myproc()->sysCallTotal = 1;
+  myproc()->sysCallTotal = 0;
   return 0;
 }
 
