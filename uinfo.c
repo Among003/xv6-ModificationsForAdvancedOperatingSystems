@@ -12,9 +12,25 @@ int main(int argc, char *argv[])
   }
 
   int x = atoi(argv[1]);
-  printf(1,"%d\n",x);
 
-  printf(1 , "%d" , info(x));
+  printf(1, "pid: %d\n", getpid());
+
+  if (x == 1)
+  	printf(1, "number of processes: %d\n", info(x));
+
+  if (x == 2){
+        printf(1, "total system calls from this process: %d\n", info(x));
+        printf(1, "pid: %d\n", getpid());
+        printf(1, "total system calls from this process: %d\n", info(x));
+	printf(1, "pid: %d\n", getpid());
+	printf(1, "total system calls from this process: %d\n", info(x));
+        printf(1, "pid: %d\n", getpid());
+	printf(1, "total system calls from this process: %d\n", info(x));
+	printf(1, "pid: %d\n", getpid());
+	printf(1, "total system calls from this process: %d\n", info(x));
+}
+
+
   exit();
 }
 

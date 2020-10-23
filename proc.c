@@ -124,7 +124,7 @@ userinit(void)
   extern char _binary_initcode_start[], _binary_initcode_size[];
 
   p = allocproc();
-  
+   p->sysCallTotal = 0; 
   initproc = p;
   if((p->pgdir = setupkvm()) == 0)
     panic("userinit: out of memory?");
@@ -497,8 +497,8 @@ kill(int pid)
 }
 
 int 
-info(int x){
-
+info(int x)
+{
   if(x == 1){
     int proc_Count = 0;
     struct proc *p;
@@ -510,11 +510,26 @@ info(int x){
     return proc_Count;
   }
 
+  if(x == 2){ 
+    return myproc()->sysCallTotal;
+  }
 
   return x;
-
 }
 
+int 
+updateSysCallCount(void)
+{
+  myproc()->sysCallTotal += 1;
+  return 0;
+}
+
+int
+resetSysCallCount(void)
+{
+  myproc()->sysCallTotal = 1;
+  return 0;
+}
 
 //PAGEBREAK: 36
 // Print a process listing to console.  For debugging.

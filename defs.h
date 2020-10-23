@@ -188,7 +188,8 @@ void            clearpteu(pde_t *pgdir, char *uva);
 
 //uinfo.c
 int 		info(int);
-
+int		updateSysCallCount(void);
+int 		resetSysCallCount(void);
 
 // number of elements in fixed-size array
 #define NELEM(x) (sizeof(x)/sizeof((x)[0]))

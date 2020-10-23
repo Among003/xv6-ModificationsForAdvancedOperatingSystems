@@ -10,6 +10,7 @@
 
 int 
 sys_info(void){
+  updateSysCallCount();
   int x;
   if(argint(0, &x) < 0)
     return -1;
@@ -19,13 +20,15 @@ sys_info(void){
 
 int
 sys_fork(void)
-{
+{ 
+  updateSysCallCount();
   return fork();
 }
 
 int
 sys_exit(void)
 {
+  updateSysCallCount();
   exit();
   return 0;  // not reached
 }
@@ -33,6 +36,7 @@ sys_exit(void)
 int
 sys_wait(void)
 {
+  updateSysCallCount();
   return wait();
 }
 
@@ -40,7 +44,7 @@ int
 sys_kill(void)
 {
   int pid;
-
+  updateSysCallCount();
   if(argint(0, &pid) < 0)
     return -1;
   return kill(pid);
@@ -49,6 +53,7 @@ sys_kill(void)
 int
 sys_getpid(void)
 {
+  updateSysCallCount();
   return myproc()->pid;
 }
 
@@ -57,7 +62,7 @@ sys_sbrk(void)
 {
   int addr;
   int n;
-
+  updateSysCallCount();
   if(argint(0, &n) < 0)
     return -1;
   addr = myproc()->sz;
@@ -69,6 +74,7 @@ sys_sbrk(void)
 int
 sys_sleep(void)
 {
+  updateSysCallCount();
   int n;
   uint ticks0;
 
@@ -93,7 +99,7 @@ int
 sys_uptime(void)
 {
   uint xticks;
-
+  updateSysCallCount();
   acquire(&tickslock);
   xticks = ticks;
   release(&tickslock);
