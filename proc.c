@@ -514,6 +514,10 @@ info(int x)
     return myproc()->sysCallTotal;
   }
 
+  if(x == 3){
+    return myproc()->sz/4096;
+  }
+
   return x;
 }
 

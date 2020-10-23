@@ -15,7 +15,6 @@ sys_info(void){
   if(argint(0, &x) < 0)
     return -1;
   return info(x);
-
 }
 
 int

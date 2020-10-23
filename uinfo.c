@@ -28,9 +28,12 @@ int main(int argc, char *argv[])
 	printf(1, "total system calls from this process: %d\n", info(x));
 	printf(1, "pid: %d\n", getpid());
 	printf(1, "total system calls from this process: %d\n", info(x));
-}
+  }
 
-
+  if (x == 3)
+	printf(1, "memory size: %d\n", info(x));
+  
+  wait();
   exit();
 }
 
