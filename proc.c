@@ -519,7 +519,7 @@ info(int x)
     return myproc()->sz/4096;
   }
 
-  return x;
+  return -1;
 }
 
 int 
