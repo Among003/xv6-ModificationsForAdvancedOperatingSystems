@@ -532,3 +532,10 @@ procdump(void)
     cprintf("\n");
   }
 }
+
+int
+ticket(int x)
+{
+  return x;
+}
+

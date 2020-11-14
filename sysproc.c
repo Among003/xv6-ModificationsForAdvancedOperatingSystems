@@ -8,6 +8,16 @@
 #include "proc.h"
 
 int
+sys_ticket(void)
+{
+  int x;
+  if(argint(0, &x) < 0)
+    return -1;
+  return ticket(x);
+}
+
+
+int
 sys_fork(void)
 {
   return fork();
