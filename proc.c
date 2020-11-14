@@ -7,6 +7,8 @@
 #include "proc.h"
 #include "spinlock.h"
 
+unsigned int seed = 1;
+
 struct {
   struct spinlock lock;
   struct proc proc[NPROC];
@@ -88,6 +90,7 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
+  p->ticketCount = 1;
 
   release(&ptable.lock);
 
@@ -231,6 +234,7 @@ exit(void)
   struct proc *p;
   int fd;
 
+  curproc->ticketCount = 1; 
   if(curproc == initproc)
     panic("init exiting");
 
@@ -319,13 +323,20 @@ wait(void)
 //  - swtch to start running that process
 //  - eventually that process transfers control
 //      via swtch back to the scheduler.
+
+unsigned int random(unsigned int x)
+{
+  return x * 12351373U + 73536234U;  
+}
+
 void
 scheduler(void)
 {
   struct proc *p;
   struct cpu *c = mycpu();
   c->proc = 0;
-  
+  unsigned int randomTicket = seed; 
+ 
   for(;;){
     // Enable interrupts on this processor.
     sti();
@@ -535,7 +546,13 @@ procdump(void)
 
 int
 ticket(int x)
-{
-  return x;
+{ 
+
+  struct proc *p = myproc();
+  p->ticketCount = x;
+  return p->ticketCount;
 }
+
+
+
 
