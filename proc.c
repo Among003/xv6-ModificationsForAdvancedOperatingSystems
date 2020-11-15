@@ -7,7 +7,8 @@
 #include "proc.h"
 #include "spinlock.h"
 unsigned int GLOBAL_TICKS = 0;
-unsigned int seed = 20;
+
+
 
 struct {
   struct spinlock lock;
@@ -91,6 +92,7 @@ found:
   p->state = EMBRYO;
   p->pid = nextpid++;
   p->ticketCount = 10;
+  p->passValue = (60/p->ticketCount);
   p->procTicks = 0;
   release(&ptable.lock);
 
@@ -233,8 +235,9 @@ exit(void)
   struct proc *curproc = myproc();
   struct proc *p;
   int fd;
-
-  curproc->ticketCount = 1; 
+  curproc->procTicks = 0;
+  curproc->ticketCount = 10;
+  curproc->passValue = (60/curproc->ticketCount); 
   if(curproc == initproc)
     panic("init exiting");
 
@@ -334,41 +337,36 @@ scheduler(void)
 {
   struct proc *p;
   struct cpu *c = mycpu();
+  int minimum = 2147483647;
   c->proc = 0;
-  unsigned int randomTicket = seed; 
-  int ticketsInPool = 0; 
-  int ticketNumber = 0;
   for(;;){
     // Enable interrupts on this processor.
-    seed = random(seed);
     sti();
-    ticketsInPool = 0;
+    minimum = 2147483647;
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-	if(p->state == RUNNABLE || p->state == RUNNING)
-	  ticketsInPool += p->ticketCount;
+	if((p->state == RUNNABLE || p->state == RUNNING) && (p->passValue < minimum))
+	  minimum = p->passValue;
     } 
-    if(ticketsInPool == 0){
-	release(&ptable.lock); 
+   // cprintf("Tickets in Pool %d\n", ticketsInPool);
+
+    
+    if (minimum == 2147483647){
+	release(&ptable.lock);
 	continue;
     }
-   // cprintf("Tickets in Pool %d\n", ticketsInPool);
-    randomTicket = seed = seed % (ticketsInPool);
-    if (randomTicket < 0)
-	randomTicket *= -1;
-   
-    ticketNumber = 0;
+
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->state == RUNNABLE ||p->state == RUNNING) //&& randomTicket > 0){
-//	continue;
-	 ticketNumber+= p->ticketCount;
-      //}
-      if(ticketNumber < randomTicket)
-        continue;
-     
+
+      if(!(p->state == RUNNABLE || p->state == RUNNING) || (p->passValue > minimum)) //&& randomTicket > 0){
+	 continue;
+
       p->procTicks += 1;
       GLOBAL_TICKS += 1;
+      p->passValue += (60/p->ticketCount);
+
+     
 
       if(p->state == RUNNING)
 	break;      
@@ -578,6 +576,7 @@ ticket(int x)
   acquire(&ptable.lock);
   struct proc *p = myproc();
   p->ticketCount = x;
+  p->passValue = (60/p->ticketCount); 
   release(&ptable.lock);
   return p->ticketCount;
 }
