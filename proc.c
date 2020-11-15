@@ -92,7 +92,7 @@ found:
   p->state = EMBRYO;
   p->pid = nextpid++;
   p->ticketCount = 10;
-  p->passValue = (60/p->ticketCount);
+  p->passValue = (1.0/p->ticketCount);
   p->procTicks = 0;
   release(&ptable.lock);
 
@@ -237,7 +237,7 @@ exit(void)
   int fd;
   curproc->procTicks = 0;
   curproc->ticketCount = 10;
-  curproc->passValue = (60/curproc->ticketCount); 
+  curproc->passValue = (1.0/curproc->ticketCount); 
   if(curproc == initproc)
     panic("init exiting");
 
@@ -337,7 +337,7 @@ scheduler(void)
 {
   struct proc *p;
   struct cpu *c = mycpu();
-  int minimum = 2147483647;
+  double minimum = 214744;
   c->proc = 0;
   for(;;){
     // Enable interrupts on this processor.
@@ -364,7 +364,7 @@ scheduler(void)
 
       p->procTicks += 1;
       GLOBAL_TICKS += 1;
-      p->passValue += (60/p->ticketCount);
+      p->passValue += (1.0/p->ticketCount);
 
      
 
@@ -576,7 +576,7 @@ ticket(int x)
   acquire(&ptable.lock);
   struct proc *p = myproc();
   p->ticketCount = x;
-  p->passValue = (60/p->ticketCount); 
+  p->passValue = (1.0/p->ticketCount); 
   release(&ptable.lock);
   return p->ticketCount;
 }
