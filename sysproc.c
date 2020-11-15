@@ -7,6 +7,16 @@
 #include "mmu.h"
 #include "proc.h"
 
+
+int
+sys_ticksProc(void)
+{
+  int x;
+  if(argint(0, &x) < 0)
+    return -1;
+  return ticksProc(x);
+}
+
 int
 sys_ticket(void)
 {

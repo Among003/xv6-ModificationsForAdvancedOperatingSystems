@@ -188,7 +188,7 @@ void            clearpteu(pde_t *pgdir, char *uva);
 
 // ticket.c
 int ticket(int);
-
+int ticksProc(int);
 
 // number of elements in fixed-size array
 #define NELEM(x) (sizeof(x)/sizeof((x)[0]))

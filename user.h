@@ -24,6 +24,8 @@ char* sbrk(int);
 int sleep(int);
 int uptime(void);
 int ticket(int);
+int ticks(int);
+int ticksProc(int);
 
 
 // ulib.c

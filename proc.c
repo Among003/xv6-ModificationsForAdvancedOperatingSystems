@@ -6,7 +6,7 @@
 #include "x86.h"
 #include "proc.h"
 #include "spinlock.h"
-
+unsigned int GLOBAL_TICKS = 0;
 unsigned int seed = 1;
 
 struct {
@@ -91,7 +91,7 @@ found:
   p->state = EMBRYO;
   p->pid = nextpid++;
   p->ticketCount = 10;
-
+  p->procTicks = 0;
   release(&ptable.lock);
 
   // Allocate kernel stack.
@@ -372,6 +372,8 @@ scheduler(void)
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
       c->proc = p;
+      p->procTicks += 1;
+      GLOBAL_TICKS += 1;
       switchuvm(p);
       p->state = RUNNING;
 
@@ -576,6 +578,18 @@ ticket(int x)
   return p->ticketCount;
 }
 
+int
+ticksProc(int x)
+{
+  if(x == 0){
+    acquire(&ptable.lock);
+    struct proc *p = myproc();
+    p->ticketCount = x;
+    release(&ptable.lock);
+    return p->procTicks;
+  } 
+  else if(x == 1)
+     return GLOBAL_TICKS;
 
-
-
+   return -1; 
+}

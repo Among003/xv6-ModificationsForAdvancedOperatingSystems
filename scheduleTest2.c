@@ -3,7 +3,7 @@
 #include "user.h"
 int main(int argc, char *argv[])
 {
-	ticket(20); 
+	printf(1,"Ticket Count: %d\n",ticket(20)); 
 	int i,k;
 	const int loop=43000;
 	for(i=0;i<loop;i++)
@@ -14,5 +14,6 @@ int main(int argc, char *argv[])
 			asm("nop");
 		}
 	}
+	printf(1,"Program 2: Total number of ticks %d out of %d global ticks\n",ticksProc(0), ticksProc(1));
 	exit();
 }
