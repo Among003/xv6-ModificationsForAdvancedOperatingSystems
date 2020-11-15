@@ -346,7 +346,7 @@ scheduler(void)
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-	if(p->state == RUNNABLE)
+	if(p->state == RUNNABLE || p->state == RUNNING)
 	  ticketsInPool += p->ticketCount;
     } 
     if(ticketsInPool == 0){
@@ -360,20 +360,23 @@ scheduler(void)
    
     ticketNumber = 0;
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->state == RUNNABLE) //&& randomTicket > 0){
+      if(p->state == RUNNABLE ||p->state == RUNNING) //&& randomTicket > 0){
 //	continue;
 	 ticketNumber+= p->ticketCount;
       //}
       if(ticketNumber < randomTicket)
         continue;
-	
-        
+
+      if(p->state == RUNNING)
+	break;      
+  
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
       c->proc = p;
       p->procTicks += 1;
       GLOBAL_TICKS += 1;
+      
       switchuvm(p);
       p->state = RUNNING;
 
@@ -589,7 +592,10 @@ ticksProc(int x)
     return p->procTicks;
   } 
   else if(x == 1)
-     return GLOBAL_TICKS;
+     acquire(&ptable.lock);
+     int z = GLOBAL_TICKS;
+     release(&ptable.lock);
+     return z;
 
    return -1; 
 }
