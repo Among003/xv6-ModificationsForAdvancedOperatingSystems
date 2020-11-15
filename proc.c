@@ -7,7 +7,7 @@
 #include "proc.h"
 #include "spinlock.h"
 unsigned int GLOBAL_TICKS = 0;
-unsigned int seed = 1;
+unsigned int seed = 20;
 
 struct {
   struct spinlock lock;
@@ -366,6 +366,9 @@ scheduler(void)
       //}
       if(ticketNumber < randomTicket)
         continue;
+     
+      p->procTicks += 1;
+      GLOBAL_TICKS += 1;
 
       if(p->state == RUNNING)
 	break;      
@@ -374,8 +377,6 @@ scheduler(void)
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
       c->proc = p;
-      p->procTicks += 1;
-      GLOBAL_TICKS += 1;
       
       switchuvm(p);
       p->state = RUNNING;
