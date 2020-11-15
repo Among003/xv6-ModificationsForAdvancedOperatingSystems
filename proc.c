@@ -11,8 +11,8 @@ unsigned int GLOBAL_TICKS = 0;
 
 
 struct {
-  struct spinlock lock;
-  struct proc proc[NPROC];
+	struct spinlock lock;
+	struct proc proc[NPROC];
 } ptable;
 
 static struct proc *initproc;
@@ -23,49 +23,49 @@ extern void trapret(void);
 
 static void wakeup1(void *chan);
 
-void
+	void
 pinit(void)
 {
-  initlock(&ptable.lock, "ptable");
+	initlock(&ptable.lock, "ptable");
 }
 
 // Must be called with interrupts disabled
 int
 cpuid() {
-  return mycpu()-cpus;
+	return mycpu()-cpus;
 }
 
 // Must be called with interrupts disabled to avoid the caller being
 // rescheduled between reading lapicid and running through the loop.
-struct cpu*
+	struct cpu*
 mycpu(void)
 {
-  int apicid, i;
-  
-  if(readeflags()&FL_IF)
-    panic("mycpu called with interrupts enabled\n");
-  
-  apicid = lapicid();
-  // APIC IDs are not guaranteed to be contiguous. Maybe we should have
-  // a reverse map, or reserve a register to store &cpus[i].
-  for (i = 0; i < ncpu; ++i) {
-    if (cpus[i].apicid == apicid)
-      return &cpus[i];
-  }
-  panic("unknown apicid\n");
+	int apicid, i;
+
+	if(readeflags()&FL_IF)
+		panic("mycpu called with interrupts enabled\n");
+
+	apicid = lapicid();
+	// APIC IDs are not guaranteed to be contiguous. Maybe we should have
+	// a reverse map, or reserve a register to store &cpus[i].
+	for (i = 0; i < ncpu; ++i) {
+		if (cpus[i].apicid == apicid)
+			return &cpus[i];
+	}
+	panic("unknown apicid\n");
 }
 
 // Disable interrupts so that we are not rescheduled
 // while reading proc from the cpu structure
 struct proc*
 myproc(void) {
-  struct cpu *c;
-  struct proc *p;
-  pushcli();
-  c = mycpu();
-  p = c->proc;
-  popcli();
-  return p;
+	struct cpu *c;
+	struct proc *p;
+	pushcli();
+	c = mycpu();
+	p = c->proc;
+	popcli();
+	return p;
 }
 
 //PAGEBREAK: 32
@@ -73,25 +73,25 @@ myproc(void) {
 // If found, change state to EMBRYO and initialize
 // state required to run in the kernel.
 // Otherwise return 0.
-static struct proc*
+	static struct proc*
 allocproc(void)
 {
-  struct proc *p;
-  char *sp;
+	struct proc *p;
+	char *sp;
 
-  acquire(&ptable.lock);
+	acquire(&ptable.lock);
 
-  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
-    if(p->state == UNUSED)
-      goto found;
+	for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
+		if(p->state == UNUSED)
+			goto found;
 
-  release(&ptable.lock);
-  return 0;
+	release(&ptable.lock);
+	return 0;
 
 found:
-  p->state = EMBRYO;
-  p->pid = nextpid++;
-  p->ticketCount = 10;
+	p->state = EMBRYO;
+	p->pid = nextpid++;
+	p->ticketCount = 1;
   p->passValue = (1.0/p->ticketCount);
   p->procTicks = 0;
   release(&ptable.lock);
@@ -236,7 +236,7 @@ exit(void)
   struct proc *p;
   int fd;
   curproc->procTicks = 0;
-  curproc->ticketCount = 10;
+  curproc->ticketCount = 1;
   curproc->passValue = (1.0/curproc->ticketCount); 
   if(curproc == initproc)
     panic("init exiting");

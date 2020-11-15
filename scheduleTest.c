@@ -3,7 +3,7 @@
 #include "user.h"
 int main(int argc, char *argv[])
 {
-	printf(1,"Ticket Count: %d\n",ticket(30)); 
+	ticket(30); 
 	int i,k;
 	const int loop=43000;
 	for(i=0;i<loop;i++)
