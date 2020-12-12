@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 
 
 void frisbee(void* arg){
-	printf(0,"test print\n");
+	printf(1,"process ID: %d", getpid());
 	return;
 }
 
@@ -33,8 +33,14 @@ int thread_create(void (*start_routine)(void*), void *arg){
 	lock_acquire(&LK);
 	void *stack = malloc(PGSIZE*2);
 	lock_release(&LK);
+	
+	if((uint)stack % PGSIZE)
+		stack = stack + (PGSIZE - (uint)stack % PGSIZE);
+	
 	printf(0, "STACK ALLOCATED\n");
-    clone(stack, PGSIZE*2);
+	
+    clone(stack, PGSIZE);
+	start_routine(arg);
 	return 0;
 }
 

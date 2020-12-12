@@ -519,9 +519,11 @@ int clone(void* stack, int size){
   np->tf->eax = 0;
  // int stackWriteOut1 = 0xffffffff;
   
-  np->tf->esp = (uint)stack + size;
+  //copyuvm(stack,size/2);
   
-  np->tf->ebp = (uint)stack;
+  
+  np->tf->esp = (uint)stack + size;
+  //np->tf->ebp = (uint)stack;
   //np->tf->ebp = (uint)stack;
   
   for(i = 0; i < NOFILE; i++)
@@ -531,13 +533,9 @@ int clone(void* stack, int size){
   
 
   safestrcpy(np->name, curproc->name, sizeof(curproc->name));
-
   pid = np->pid;
-
   acquire(&ptable.lock);
-
   np->state = RUNNABLE;
-
   release(&ptable.lock);
 
   return pid;
