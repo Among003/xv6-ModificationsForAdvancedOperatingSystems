@@ -509,12 +509,12 @@ int clone(void){
   //cprintf(0, "test2");
   // Copy process state from proc.
   
-  uint payLoad0;
-  uint payLoad1;
+  uint payLoad[3];
   void(*start_routine)(void*);
   int size = 4096;
   void *stack = 0;
   void* arg;
+  void* arg2;
   
   if(argptr(1, (void*)&start_routine, sizeof(start_routine) < 0))
 		return -1;
@@ -523,20 +523,22 @@ int clone(void){
   if(argptr(2, (void*)&arg, sizeof(arg) < 0)){
 			return -1;
 	}
-  
+  if(argptr(3, (void*)&arg2, sizeof(arg) < 0)){
+			return -1;
+	}  
   
   np->pgdir = curproc->pgdir;
   np->sz = curproc->sz;
   np->parent = curproc;
   *np->tf = *curproc->tf;
+  np->tf->esp = (uint)stack + size;
   
-  
-  payLoad0 = 0xffffffff;
-  payLoad1 = (uint)arg;
-  np->tf->esp -= 4;
-  copyout(np->pgdir, np->tf->esp, &payLoad1, 4);
-  np->tf->esp -= 4;
-  copyout(np->pgdir, np->tf->esp, &payLoad0, 4);
+  payLoad[0] = 0xffffffff;
+  payLoad[1] = (uint)arg;
+  payLoad[2] = (uint)arg2;
+  np->tf->esp -= 12;
+  copyout(np->pgdir, np->tf->esp, &payLoad, 12);
+
 
  
   //cprintf(0, "tes3");
@@ -544,7 +546,9 @@ int clone(void){
   np->tf->eax = 0;
  // int stackWriteOut1 = 0xffffffff;
   
-  np->tf->esp = (uint)stack + size;
+  
+  
+  
   
   np->tf->ebp = (uint)stack;
   np->tf->eip = (uint)start_routine;
