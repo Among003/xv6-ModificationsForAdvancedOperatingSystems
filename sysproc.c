@@ -8,6 +8,22 @@
 #include "proc.h"
 
 int
+sys_clone(void)
+{
+
+  int stack;
+  int size;
+
+  if(argint(0, &stack) < 0)
+    return -1;
+  if(argint(1, &size) < 0)
+    return -1;
+
+  return clone((void*)stack, size);
+}
+
+
+int
 sys_fork(void)
 {
   return fork();

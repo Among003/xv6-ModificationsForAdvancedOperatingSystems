@@ -496,6 +496,56 @@ kill(int pid)
   return -1;
 }
 
+int clone(void){
+  //cprintf(0, "test");
+  int i, pid;
+  struct proc *np;
+  struct proc *curproc = myproc();
+  
+  // Allocate process.
+  if((np = allocproc()) == 0){
+    return -1;
+  }
+  //cprintf(0, "test2");
+  // Copy process state from proc.
+  np->pgdir = curproc->pgdir;
+  np->sz = curproc->sz;
+  np->parent = curproc;
+  *np->tf = *curproc->tf;
+  //cprintf(0, "tes3");
+  // Clear %eax so that fork returns 0 in the child.
+  np->tf->eax = 0;
+ // int stackWriteOut1 = 0xffffffff;
+  
+  np->tf->esp = (uint)stack + size;
+  
+  np->tf->ebp = (uint)stack;
+  //np->tf->ebp = (uint)stack;
+  
+  
+  
+  
+  for(i = 0; i < NOFILE; i++)
+    if(curproc->ofile[i])
+      np->ofile[i] = curproc->ofile[i];
+  np->cwd = curproc->cwd;
+
+  safestrcpy(np->name, curproc->name, sizeof(curproc->name));
+
+  pid = np->pid;
+
+  acquire(&ptable.lock);
+
+  np->state = RUNNABLE;
+
+  release(&ptable.lock);
+
+  return pid;
+
+
+}
+
+
 //PAGEBREAK: 36
 // Print a process listing to console.  For debugging.
 // Runs when user types ^P on console.
