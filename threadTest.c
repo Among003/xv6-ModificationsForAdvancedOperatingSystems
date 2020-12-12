@@ -34,7 +34,7 @@ int thread_create(void (*start_routine)(void*), void *arg){
 	void *stack = malloc(PGSIZE*2);
 	lock_release(&LK);
 	printf(0, "STACK ALLOCATED\n");
-    clone(stack, PGSIZE*2, start_routine, arg);
+    clone(stack, PGSIZE*2);
 	return 0;
 }
 

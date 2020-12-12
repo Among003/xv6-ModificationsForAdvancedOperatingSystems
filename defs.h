@@ -187,7 +187,7 @@ int             copyout(pde_t*, uint, void*, uint);
 void            clearpteu(pde_t *pgdir, char *uva);
 
 //kernelTest.c
-int clone(void);
+int clone(void *, int);
 
 
 // number of elements in fixed-size array

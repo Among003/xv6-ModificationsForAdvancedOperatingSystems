@@ -496,7 +496,7 @@ kill(int pid)
   return -1;
 }
 
-int clone(void){
+int clone(void* stack, int size){
   //cprintf(0, "test");
   int i, pid;
   struct proc *np;
@@ -506,6 +506,8 @@ int clone(void){
   if((np = allocproc()) == 0){
     return -1;
   }
+  
+
   //cprintf(0, "test2");
   // Copy process state from proc.
   np->pgdir = curproc->pgdir;
@@ -522,13 +524,11 @@ int clone(void){
   np->tf->ebp = (uint)stack;
   //np->tf->ebp = (uint)stack;
   
-  
-  
-  
   for(i = 0; i < NOFILE; i++)
     if(curproc->ofile[i])
-      np->ofile[i] = curproc->ofile[i];
-  np->cwd = curproc->cwd;
+      np->ofile[i] = filedup(curproc->ofile[i]);
+  np->cwd = idup(curproc->cwd);
+  
 
   safestrcpy(np->name, curproc->name, sizeof(curproc->name));
 
