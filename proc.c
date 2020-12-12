@@ -508,10 +508,37 @@ int clone(void){
   }
   //cprintf(0, "test2");
   // Copy process state from proc.
+  
+  uint payLoad0;
+  uint payLoad1;
+  void(*start_routine)(void*);
+  int size = 4096;
+  void *stack = 0;
+  void* arg;
+  
+  if(argptr(1, (void*)&start_routine, sizeof(start_routine) < 0))
+		return -1;
+  if(argptr(0, (void*)&stack, sizeof(stack) < 0))
+			return -1;
+  if(argptr(2, (void*)&arg, sizeof(arg) < 0)){
+			return -1;
+	}
+  
+  
   np->pgdir = curproc->pgdir;
   np->sz = curproc->sz;
   np->parent = curproc;
   *np->tf = *curproc->tf;
+  
+  
+  payLoad0 = 0xffffffff;
+  payLoad1 = (uint)arg;
+  np->tf->esp -= 4;
+  copyout(np->pgdir, np->tf->esp, &payLoad1, 4);
+  np->tf->esp -= 4;
+  copyout(np->pgdir, np->tf->esp, &payLoad0, 4);
+
+ 
   //cprintf(0, "tes3");
   // Clear %eax so that fork returns 0 in the child.
   np->tf->eax = 0;
@@ -520,6 +547,7 @@ int clone(void){
   np->tf->esp = (uint)stack + size;
   
   np->tf->ebp = (uint)stack;
+  np->tf->eip = (uint)start_routine;
   //np->tf->ebp = (uint)stack;
   
   
@@ -527,8 +555,8 @@ int clone(void){
   
   for(i = 0; i < NOFILE; i++)
     if(curproc->ofile[i])
-      np->ofile[i] = curproc->ofile[i];
-  np->cwd = curproc->cwd;
+      np->ofile[i] = filedup(curproc->ofile[i]);
+  np->cwd = idup(curproc->cwd);
 
   safestrcpy(np->name, curproc->name, sizeof(curproc->name));
 

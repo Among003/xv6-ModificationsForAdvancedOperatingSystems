@@ -4,7 +4,7 @@
 #include "x86.h"
 #define PGSIZE 4096
 
-
+lock_t TOKEN = 0;
 
 int thread_create(void (*start_routine)(void*), void *arg);
 int lock_acquire(lock_t *);
@@ -15,7 +15,9 @@ void frisbee(void* arg);
 int main(int argc, char *argv[])
 {
 	
-	int x = 5;
+	int x = 20;
+	thread_create(&frisbee, &x);
+	thread_create(&frisbee, &x);
 	thread_create(&frisbee, &x);
 	printf(0, "Exiting\n");
 	exit();
@@ -24,8 +26,9 @@ int main(int argc, char *argv[])
 
 
 void frisbee(void* arg){
-	printf(0,"test print\n");
-	return;
+	printf(1,"test print %d\n", *((int*) arg));
+	
+	exit();
 }
 
 int thread_create(void (*start_routine)(void*), void *arg){
@@ -33,8 +36,12 @@ int thread_create(void (*start_routine)(void*), void *arg){
 	lock_acquire(&LK);
 	void *stack = malloc(PGSIZE*2);
 	lock_release(&LK);
+	
+	if((uint)stack % PGSIZE)
+		stack = stack + (PGSIZE - (uint)stack % PGSIZE);
+
 	printf(0, "STACK ALLOCATED\n");
-    clone(stack, PGSIZE*2, start_routine, arg);
+    clone(stack, start_routine, arg);
 	return 0;
 }
 
